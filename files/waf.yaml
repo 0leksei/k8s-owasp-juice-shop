@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: juice-shop-ingress2
+  namespace: test
+  annotations:
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      SecRuleEngine On
+      SecRequestBodyAccess On
+      SecAuditEngine RelevantOnly
+      SecAuditLogParts ABCFHZ
+      SecAuditLog /var/log/modsec_audit.log
+      SecRule REQUEST_URI "@detectSQLi" "id:12345,log,deny"
+spec:
+  rules:
+    - host: "*.amazonaws.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: juice-shop-svc
+              servicePort: 8080

@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juice-shop
+  namespace: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: juice-shop
+  template:
+    metadata:
+      labels:
+        app: juice-shop
+    spec:
+      containers:
+        - name: juice-shop
+          image: bkimminich/juice-shop
+          ports:
+          - containerPort: 3000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: juice-shop-svc
+  namespace: test
+  labels:
+    app: juice-shop
+spec:
+  selector:
+    app: juice-shop
+  ports:
+    - port: 8080
+      targetPort: 3000
+      protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: juice-shop-ingress1
+  namespace: test
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: "*.amazonaws.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: juice-shop-svc
+              servicePort: 8080
