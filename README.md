@@ -74,12 +74,7 @@ Make sure you have pre-requisites and AWS authentication setup as mentioned abov
 
 ### Clone repository
 
-Clone the solution repository and go into its directory:
-
-```
-git@github.com:0leksei/hometest.git
-cd hometest
-```
+Clone the solution repository and go into its directory.
 
 ### Run Terraform
 
